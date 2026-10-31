@@ -20,8 +20,8 @@ application:
             autoSubmit: false
 services:
   mysql:
-    # upstream: docker.io/library/mysql:8.0
-    image: docker.1ms.run/library/mysql:8.0
+    # upstream: docker.io/library/mysql:8.0.46
+    image: docker.1ms.run/library/mysql:8.0.46
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
       - MYSQL_ROOT_PASSWORD={{ stable_secret "qb_mysql_root" }}
@@ -31,14 +31,14 @@ services:
     binds:
       - /lzcapp/var/mysql:/var/lib/mysql
   chromadb:
-    # upstream: docker.io/chromadb/chroma:latest
+    # upstream: docker.io/chromadb/chroma:1.5.9
     # Keep upstream selection in this draft; pin verified digest before release.
-    image: docker.1ms.run/chromadb/chroma:latest
+    image: docker.1ms.run/chromadb/chroma:1.5.9
     binds:
       - /lzcapp/var/chromadb:/data
   backend:
-    # upstream: ghcr.io/gygy-open/question-bank-backend:1.6.1
-    image: ghcr.1ms.run/gygy-open/question-bank-backend:1.6.1
+    # upstream: ghcr.io/gygy-open/question-bank-backend:1.7.0
+    image: ghcr.1ms.run/gygy-open/question-bank-backend:1.7.0
     command: python /lzcapp/pkg/content/start.py backend
     depends_on:
       - mysql
@@ -52,8 +52,8 @@ services:
     binds:
       - /lzcapp/var/data:/data
   worker:
-    # upstream: ghcr.io/gygy-open/question-bank-backend:1.6.1
-    image: ghcr.1ms.run/gygy-open/question-bank-backend:1.6.1
+    # upstream: ghcr.io/gygy-open/question-bank-backend:1.7.0
+    image: ghcr.1ms.run/gygy-open/question-bank-backend:1.7.0
     command: python /lzcapp/pkg/content/start.py worker
     depends_on:
       - backend
@@ -66,8 +66,8 @@ services:
     binds:
       - /lzcapp/var/data:/data
   frontend:
-    # upstream: ghcr.io/gygy-open/question-bank-frontend:1.6.1
-    image: ghcr.1ms.run/gygy-open/question-bank-frontend:1.6.1
+    # upstream: ghcr.io/gygy-open/question-bank-frontend:1.7.0
+    image: ghcr.1ms.run/gygy-open/question-bank-frontend:1.7.0
     depends_on:
       - backend
     environment:

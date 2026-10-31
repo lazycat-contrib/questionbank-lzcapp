@@ -1,5 +1,5 @@
 package: community.lazycat.app.questionbank
-version: 1.6.1
+version: 1.7.0
 name: QuestionBank
 description: AI-native question bank and paper composition system for teachers.
 min_os_version: "1.5.0"
