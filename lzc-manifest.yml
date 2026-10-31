@@ -1,0 +1,80 @@
+# Draft: not yet built or runtime-tested. All image deliveries still require verification.
+application:
+  subdomain: questionbank
+  multi_instance: false
+  upstreams:
+    - location: /
+      backend: http://frontend:80/
+  injects:
+    - id: login-autofill
+      on: browser
+      when:
+        - /login
+      do:
+        - src: builtin://simple-inject-password
+          params:
+            user: '{{ .U.login_user }}'
+            password: '{{ .U.login_password }}'
+            userSelector: 'input[autocomplete="username"]'
+            passwordSelector: 'input[type="password"]'
+            autoSubmit: false
+services:
+  mysql:
+    # upstream: docker.io/library/mysql:8.0
+    image: docker.1ms.run/library/mysql:8.0
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      - MYSQL_ROOT_PASSWORD={{ stable_secret "qb_mysql_root" }}
+      - MYSQL_DATABASE=question_bank
+      - MYSQL_USER=question_bank
+      - MYSQL_PASSWORD={{ stable_secret "qb_mysql_app" }}
+    binds:
+      - /lzcapp/var/mysql:/var/lib/mysql
+  chromadb:
+    # upstream: docker.io/chromadb/chroma:latest
+    # Keep upstream selection in this draft; pin verified digest before release.
+    image: docker.1ms.run/chromadb/chroma:latest
+    binds:
+      - /lzcapp/var/chromadb:/data
+  backend:
+    # upstream: ghcr.io/gygy-open/question-bank-backend:1.6.1
+    image: ghcr.1ms.run/gygy-open/question-bank-backend:1.6.1
+    command: python /lzcapp/pkg/content/start.py backend
+    depends_on:
+      - mysql
+      - chromadb
+    environment:
+      - SECRET_KEY={{ stable_secret "qb_jwt" }}
+      - DB_URL=mysql+aiomysql://question_bank:{{ stable_secret "qb_mysql_app" }}@mysql:3306/question_bank
+      - CHROMADB_HOST=chromadb
+      - CHROMADB_PORT=8000
+      - DATA_DIR=/data
+    binds:
+      - /lzcapp/var/data:/data
+  worker:
+    # upstream: ghcr.io/gygy-open/question-bank-backend:1.6.1
+    image: ghcr.1ms.run/gygy-open/question-bank-backend:1.6.1
+    command: python /lzcapp/pkg/content/start.py worker
+    depends_on:
+      - backend
+    environment:
+      - SECRET_KEY={{ stable_secret "qb_jwt" }}
+      - DB_URL=mysql+aiomysql://question_bank:{{ stable_secret "qb_mysql_app" }}@mysql:3306/question_bank
+      - CHROMADB_HOST=chromadb
+      - CHROMADB_PORT=8000
+      - DATA_DIR=/data
+    binds:
+      - /lzcapp/var/data:/data
+  frontend:
+    # upstream: ghcr.io/gygy-open/question-bank-frontend:1.6.1
+    image: ghcr.1ms.run/gygy-open/question-bank-frontend:1.6.1
+    depends_on:
+      - backend
+    environment:
+      - API_BASE_URL=http://backend:8000
+usage: |
+  草稿，尚未构建或实机验证，不可视为已发布。
+  首次进入应用时，请在初始化向导手动创建管理员，使用部署参数中的账号和密码，之后登录页按该参数填充，不自动提交。
+  修改应用内密码后，请同步修改部署参数；参数不会自动创建账号或重置已有账号。
+  内部数据库、向量库及应用数据存于应用数据目录。卸载前请备份。
+  模型服务需自行配置。不包含模型API凭据。

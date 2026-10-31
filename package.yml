@@ -1,0 +1,18 @@
+package: community.lazycat.app.questionbank
+version: 1.6.1
+name: QuestionBank
+description: AI-native question bank and paper composition system for teachers.
+min_os_version: "1.5.0"
+homepage: https://github.com/gygy-open/question-bank
+author: gygy-open
+license: AGPL-3.0-or-later
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: QuestionBank
+    description: 面向教师与教研团队的 AI 题库与组稿系统。
+  en:
+    name: QuestionBank
+    description: AI-native question bank and paper composition system for teachers.

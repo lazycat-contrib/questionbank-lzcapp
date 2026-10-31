@@ -1,0 +1,21 @@
+params:
+  - id: login_user
+    type: string
+    name: Admin username
+    description: Use this username when manually creating the first administrator in the setup wizard.
+    default_value: admin
+    optional: false
+  - id: login_password
+    type: secret
+    name: Admin password
+    description: Use this password during first-run account creation; changing this parameter does not reset existing accounts.
+    default_value: "$random(len=20)"
+    optional: false
+locales:
+  zh:
+    login_user:
+      name: 管理员用户名
+      description: 首次在应用初始化向导中手动创建管理员时使用此用户名。
+    login_password:
+      name: 管理员密码
+      description: 首次建账号时使用此密码；修改该参数不会重置已有账号，请与应用内密码保持一致。
