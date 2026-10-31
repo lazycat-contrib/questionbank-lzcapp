@@ -49,9 +49,9 @@ images:
     target: service
     service: mysql
     source: docker.io/library/mysql
-    channel: custom
-    sort: created
-    tag_regex: '^8[.]0$'
+    channel: stable
+    sort: semver
+    tag_regex: '^8[.]0[.][0-9]+$'
     delivery:
       mode: mirror
       require_digest_match: true
@@ -59,9 +59,9 @@ images:
     target: service
     service: chromadb
     source: docker.io/chromadb/chroma
-    channel: custom
-    sort: created
-    tag_regex: '^latest$'
+    channel: stable
+    sort: semver
+    tag_regex: '^[0-9]+[.][0-9]+[.][0-9]+$'
     delivery:
       mode: mirror
       require_digest_match: true
