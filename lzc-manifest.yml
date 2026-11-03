@@ -2,6 +2,10 @@
 application:
   subdomain: questionbank
   multi_instance: false
+  # This app authenticates its own users, so it is exposed directly
+  # instead of sitting behind the platform login gate.
+  public_path:
+    - /
   upstreams:
     - location: /
       backend: http://frontend:80/
